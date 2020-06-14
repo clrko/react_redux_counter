@@ -1,6 +1,5 @@
 import React from 'react';
-import CounterComponent from './CounterContainer'
-import './App.css';
+import CounterComponent from './counterContainer'
 
 function App() {
   return (
