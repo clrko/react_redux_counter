@@ -1,68 +1,139 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React_redux_challenge
 
-## Available Scripts
+This repository contains an exercise to learn Redux with React. I have migrated the counter created with vanilla JS and Redux (available [here](https://github.com/clrko/js_redux_counter)).
 
-In the project directory, you can run:
+## Run the app in the development mode.
 
-### `npm start`
-
-Runs the app in the development mode.<br />
+`npm install`
+`npm start`
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
-### `npm test`
+## Main Process
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Installing React Redux
 
-### `npm run build`
+1. Create React app `npx create-react-app appname` 
+2. `npm install react-redux`
+3. `npm i redux`
+4. Installed the [Redux Dev Tools](https://github.com/zalmoxisus/redux-devtools-extension)
+5. Set up the index.js file:
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import counterReducer from './counterReducer'
+import App from './App';
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+const store = createStore(
+  counterReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+ReactDOM.render(
+  <Provider store={store} >
+    <App />
+  </Provider>,
+  document.getElementById('root')
+);
+```
 
-### `npm run eject`
+6. Create the Reducer
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+//counterReducer.js
+const counterReducer = (state = 0, action) => {
+    switch (action.type) {
+        case 'ADD_1':
+            return state + 1;
+        case 'REMOVE_1':
+            return state - 1;
+        case 'ADD_10':
+            return state + 10;
+        case 'REMOVE_10':
+            return state - 10;
+        case 'RESET':
+            return 0;
+        default:
+            return state;
+    }
+}
+export default counterReducer;
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Display the value of the state in the component
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. Create a counterContainer.js file in which a CounterComponent will be connected to the store via the connect method of react-redux : 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+//counterContainer.js
+import React from "react";
+import { connect } from "react-redux";
 
-## Learn More
+const mapStateToProps = state => ({
+    counter: state
+});
+const CounterComponent = ({ counter }) => (
+    <div>
+      {counter}
+    </div>
+);
+export default connect(mapStateToProps)(CounterComponent);
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Import this component into App.js
 
-### Code Splitting
+```
+import React from 'react';
+import CounterComponent from './counterContainer'
+import './App.css';
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+function App() {
+  return (
+    <div className="App">
+      <CounterComponent />
+    </div>
+  );
+}
 
-### Analyzing the Bundle Size
+export default App;
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+### Modify the value of the state
 
-### Making a Progressive Web App
+We cannot directly modify the data stored in Redux store. We need to use actions that will be dispatched to the store. We want to dispatch the actions ADD_1, REMOVE_1 etc when the related button is clicked on. 
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+```
+import React from "react";
+import { connect } from "react-redux";
 
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+const mapStateToProps = state => ({
+    counter: state
+});
+const CounterComponent = ({ counter, dispatch}) => (
+    <div>
+      <p>{counter}</p>
+      <button onClick={() => dispatch({ type: 'ADD_1' })}>
+        Add 1
+      </button>
+      <button onClick={() => dispatch({ type: 'REMOVE_1' })}>
+        Remove 1
+      </button>
+      <button onClick={() => dispatch({ type: 'ADD_10' })}>
+        Add 10
+      </button>
+      <button onClick={() => dispatch({ type: 'REMOVE_10' })}>
+        Remove 10
+      </button>
+      <button onClick={() => dispatch({ type: 'RESET' })}>
+        Reset
+      </button>
+    </div>
+);
+export default connect(mapStateToProps)(CounterComponent);
+```

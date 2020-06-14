@@ -1,7 +1,7 @@
 import React from 'react';
 import CounterComponent from './counterContainer'
 
-function App() {
+const App = () => {
   return (
     <div className="App">
       <CounterComponent />
