@@ -1,5 +1,5 @@
 import React from 'react';
-import CounterComponent from './counterContainer'
+import CounterComponent from './CounterContainer'
 
 const App = () => {
   return (
